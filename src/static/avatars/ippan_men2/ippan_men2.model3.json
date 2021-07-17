@@ -1,0 +1,18 @@
+{
+	"Version": 3,
+	"FileReferences": {
+		"Moc": "ippan_men2.moc3",
+		"Textures": [
+			"ippan_men2.2048/texture_00.png"
+		],
+		"Physics": "ippan_men2.physics3.json",
+		"DisplayInfo": "ippan_men2.cdi3.json"
+	},
+	"Groups": [
+		{
+			"Target": "Parameter",
+			"Name": "EyeBlink",
+			"Ids": []
+		}
+	]
+}
