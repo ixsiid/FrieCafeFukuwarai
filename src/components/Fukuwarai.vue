@@ -77,6 +77,10 @@ export default {
       this.drag = undefined;
       this.index = 0;
       this.active = true;
+      
+      Array.from(document.querySelectorAll('.parts')).map(x => {
+        x.style.display = 'block';
+      });
     },
     up() {
       if (!this.active) return;
@@ -95,7 +99,6 @@ export default {
 
       const d2 = Math.pow(tx - cx, 2) + Math.pow(ty - cy, 2);
       if (d2 < tr2) {
-        console.log('fixed');
         this.drag.style.display = 'none';
         this.drag.style['z-index'] = this.index;
         this.index++;

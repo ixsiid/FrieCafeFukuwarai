@@ -1,6 +1,6 @@
 const path = require('path');
 
-const title = 'Template Project';
+const title = 'フレカフェ福笑い';
 
 module.exports = {
 	outputDir: path.resolve(__dirname, 'docs'),
