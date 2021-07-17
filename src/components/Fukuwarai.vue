@@ -2,7 +2,7 @@
   <div>
   <div class="game" :style="`width: ${width}px; height: ${height}px`">
     <div style="position: absolute; margin: 0; padding: 0;">
-    <div v-for="p in parts" :key="p" :style="`
+    <div v-for="(p, i) in parts" :key="'parts_' + i" :style="`
       position: absolute;
       background-image: url(${p.src});
       overflow: hidden;
