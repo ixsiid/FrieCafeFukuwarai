@@ -2,7 +2,7 @@
   <div>
   <div class="game" :style="`width: ${width}px; height: ${height}px`">
     <div style="position: absolute; margin: 0; padding: 0;">
-    <div v-for="(p, i) in parts" :key="'parts_' + i" :style="`
+    <div v-for="(p, i) in parts" class="parts" :key="'parts_' + i" :style="`
       position: absolute;
       background-image: url(${p.src});
       overflow: hidden;
@@ -16,11 +16,24 @@
       z-index: ${p.index};
       transform-origin: 50% 50%;
       transform: rotate(${p.index}deg);
-    `" />
+    `" 
+      v-on:mousedown="down"
+      v-on:mouseup="up"
+      v-on:mousemove="move"
+      v-on:wheel="wheel"
+    />
     </div>
   </div>
-  <div class="game" :style="`width: ${height}px; height: ${height}px; border-radius: 50% 50%;`">
-
+  <div class="game"
+    :style="`
+      width: ${height}px;
+      height: ${height}px;
+      border-radius: 50% 50%;
+    `"
+    ref="target"
+  />
+  <div>
+    <button v-on:click="complete">完成</button>
   </div>
   </div>
 </template>
@@ -40,6 +53,13 @@ export default {
   data() {
     return {
       parts: [],
+      drag: undefined,
+      x: 0,
+      y: 0,
+      mx: 0,
+      my: 0,
+      index: 0,
+      active: false,
     };
   },
   methods: {
@@ -50,11 +70,66 @@ export default {
         rect: x,
         r: Math.sqrt(x[2] * x[2] + x[3] * x[3]) * 1.2,
         size: [2048, 2048],
-        index: parseInt(Math.random() * 1024),
+        index: parseInt(Math.floor(Math.random() * 128) * 8),
         position: [Math.random(), Math.random()],
         scale: a.scale }));
-      console.log(a);
+
+      this.drag = undefined;
+      this.index = 0;
+      this.active = true;
     },
+    up() {
+      if (!this.active) return;
+      const cr = this.drag.getBoundingClientRect();
+      const [cx, cy] = [
+        (cr.left + cr.right)/2 + window.pageXOffset,
+        (cr.top + cr.bottom)/2 + window.pageYOffset
+      ];
+
+      const tr = this.$refs.target.getBoundingClientRect();
+      const [tx, ty] = [
+        (tr.left + tr.right)/2 + window.pageXOffset,
+        (tr.top + tr.bottom)/2 + window.pageYOffset
+      ];
+      const tr2 = tr.width * tr.width / 4;
+
+      const d2 = Math.pow(tx - cx, 2) + Math.pow(ty - cy, 2);
+      if (d2 < tr2) {
+        console.log('fixed');
+        this.drag.style.display = 'none';
+        this.drag.style['z-index'] = this.index;
+        this.index++;
+      }
+
+      this.drag = undefined;
+    },
+    down(event) {
+      if (!this.active) return;
+      this.drag = event.target;
+      this.x = parseInt(event.target.style.left);
+      this.y = parseInt(event.target.style.top);
+      this.mx = event.pageX;
+      this.my = event.pageY;
+    },
+    move(event) {
+      if (!this.active) return;
+      if (this.drag) {
+        this.drag.style.left = this.x + (event.pageX - this.mx) + 'px';
+        this.drag.style.top = this.y + (event.pageY - this.my) + 'px';
+      }
+    },
+    wheel(event) {
+      if (!this.active) return;
+      const t = event.target;
+      t.style.transform = `rotate(${parseInt(t.style.transform.replace(/[^0-9]/g, '')) + 8 * Math.round(event.deltaY / Math.abs(event.deltaY))}deg)`;
+    },
+    complete() {
+      this.active = false;
+
+      Array.from(document.querySelectorAll('.parts')).map(x => {
+        x.style.display = x.style.display == 'none' ? 'block' : 'none';
+      });
+    }
   },
 };
 </script>
